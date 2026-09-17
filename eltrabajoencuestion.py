@@ -76,27 +76,26 @@ def entraUnPajeroB2F():
     
     return {"posActual" : (0, 0), "dest" : (int(fila_actual), int(columna)), "carryon" : tieneCarryOn, "esperar" : 0, "bajando" : 0, "sentando" : 0}
 
+#aca arranca la magia de estiven
 ventanaIzq = [4*fila for fila in reversed(range(25))]
 pasilloIzq = [4*fila + 1 for fila in reversed(range(25))]
 pasilloDer = [4*fila + 2 for fila in reversed(range(25))]
 ventanaDer = [4*fila + 3 for fila in reversed(range(25))]
 
 colaSteffen = []
-colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 0]  # tanda 1
-colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 0]  # tanda 2
-colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 1]  # tanda 3
-colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 1]  # tanda 4
-colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 0]  # tanda 5
-colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 0]  # tanda 6
-colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 1]  # tanda 7
-colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 1]  # tanda 8
-#la idea de colaSteffen es agregar a la cola segun si la fila en la que estoy es par o impar,
-#y los voy agregando en el orden que me pide el metodo: 
-#ventanaIzq->ventanaDer->ventanaIzq'->ventanaDer'->pasilloIzq->pasilloDer->pasilloIzq'->pasilloDer'
+colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 0]  
+colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 0]  
+colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 1]  
+colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 1]  
+colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 0]  
+colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 0]  
+colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 1]  
+colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 1]  
+
 def entraEstiven():
     nuevoEstiven = colaSteffen.pop(0)
-    fila = nuevoEstiven//4 #hacer division entera por 4 me dice exactamente en que fila estoy, independientemente de la columna
-    columna = nuevoEstiven%4 #hacer mod 4 me dice exactamente en que lugar de esa fila estoy
+    fila = nuevoEstiven//4 
+    columna = nuevoEstiven%4 
     if(columna<=1): columna -=2
     else: columna -=1
     asientos.remove(nuevoEstiven)
