@@ -14,21 +14,10 @@ avion = [[0, 0, 0, 0, 0] for _ in range(25)]
 asientos = set()
 asientosVentanas = set()
 
-stevens = [[]*8]
-
-
 for i in range(25*4):
     if(i%4 == 3 or i%4 == 0):
         asientosVentanas.add(i)
-        if(i%4 == 3):
-
-            stevens[0].append(i)
-        else:
-            stevens[0]
     asientos.add(i)
-fila_actual = 24
-libres = [-2,-1,1,2]
-
 
 def entraUnPajeroRandom():
     nuevoPasajero = np.random.choice(list(asientos))
@@ -87,10 +76,35 @@ def entraUnPajeroB2F():
     
     return {"posActual" : (0, 0), "dest" : (int(fila_actual), int(columna)), "carryon" : tieneCarryOn, "esperar" : 0, "bajando" : 0, "sentando" : 0}
 
+ventanaIzq = [4*fila for fila in reversed(range(25))]
+pasilloIzq = [4*fila + 1 for fila in reversed(range(25))]
+pasilloDer = [4*fila + 2 for fila in reversed(range(25))]
+ventanaDer = [4*fila + 3 for fila in reversed(range(25))]
+
+colaSteffen = []
+colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 0]  # tanda 1
+colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 0]  # tanda 2
+colaSteffen += [asiento for asiento in ventanaIzq if (asiento//4) % 2 == 1]  # tanda 3
+colaSteffen += [asiento for asiento in ventanaDer if (asiento//4) % 2 == 1]  # tanda 4
+colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 0]  # tanda 5
+colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 0]  # tanda 6
+colaSteffen += [asiento for asiento in pasilloIzq if (asiento//4) % 2 == 1]  # tanda 7
+colaSteffen += [asiento for asiento in pasilloDer if (asiento//4) % 2 == 1]  # tanda 8
+#la idea de colaSteffen es agregar a la cola segun si la fila en la que estoy es par o impar,
+#y los voy agregando en el orden que me pide el metodo: 
+#ventanaIzq->ventanaDer->ventanaIzq'->ventanaDer'->pasilloIzq->pasilloDer->pasilloIzq'->pasilloDer'
 def entraEstiven():
+    nuevoEstiven = colaSteffen.pop(0)
+    fila = nuevoEstiven//4 #hacer division entera por 4 me dice exactamente en que fila estoy, independientemente de la columna
+    columna = nuevoEstiven%4 #hacer mod 4 me dice exactamente en que lugar de esa fila estoy
+    if(columna<=1): columna -=2
+    else: columna -=1
+    asientos.remove(nuevoEstiven)
+    tieneCarryOn = bool(np.random.binomial(n=1, p=PROBABILIDAD_CARRYON, size=1)[0])
+        
+    return {"posActual" : (0, 0), "dest" : (int(fila), int(columna)), "carryon" : tieneCarryOn, "esperar" : 0, "bajando" : 0, "sentando" : 0}
 
-    pass
-
+#y funciona re piola mal
 
 pajeros = []
 
@@ -103,7 +117,7 @@ while(len(asientos) > 0 or (t>0 and len(pajeros) > 0)):
     #Esto depende de la politca (random)
 
     if(avion[0][2] == 0 and len(asientos) > 0 and len(pajeros) < 4):
-        pajeros.append(entraUnPajeroB2FUltimate())
+        pajeros.append(entraEstiven())
         
     # print(pajeros)
     for pajero in pajeros:
