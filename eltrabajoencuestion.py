@@ -307,8 +307,10 @@ if __name__ == "__main__":
         funcion_seleccionada = opciones.get(opc)
         tiempos = correr(funcion_seleccionada, iteraciones)
         promedio, std = estadisticas(tiempos)
-
+        error_media = std / np.sqrt(len(tiempos))
+        error_desvio = std / np.sqrt(2*len(tiempos))
         print(f"Promedio: {promedio:.4f} s")
         print(f"Desviación Estándar (std): {std:.4f} s")
+        print(f"Error del desviación Estándar (std): {error_desvio:.4f} s")
 
 
