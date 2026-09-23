@@ -28,6 +28,7 @@ VELOCIDAD_CARRYON = 6
 MAX_EN_PASILLO = None  # None = sin tope; el pasillo se llena hasta donde da la puerta
 
 SEMILLA = 2026
+P_CARRYON = 0.5  # escenario base, el mismo que analisis_carryon.py y analisis_prioritario.py
 ITERACIONES = [10, 100, 1000]
 POLITICAS = ["Steffen", "WILMA", "RANDOM", "BackToFront", "BackToFrontUltimate"]
 
@@ -303,7 +304,7 @@ def graficar(resultados, salida):
     fig.text(
         0.055, 0.905,
         "Caja = cuartiles 1 a 3, linea llena = mediana, linea punteada = media. "
-        "Cada punto es una simulacion.",
+        f"Cada punto es una simulacion. Probabilidad de carry-on = {P_CARRYON}.",
         fontsize=9.5, color=TINTA_SEC, ha="left",
     )
 
@@ -325,8 +326,8 @@ def graficar(resultados, salida):
 
 def main():
     rng = np.random.default_rng(SEMILLA)
-    p_carryon = float(rng.uniform(0.4, 0.6))
-    print(f"Probabilidad de carry on: {p_carryon:.4f}  (semilla {SEMILLA})\n")
+    p_carryon = P_CARRYON
+    print(f"Probabilidad de carry on: {p_carryon}  (semilla {SEMILLA})\n")
 
     maximo = max(ITERACIONES)
     resultados = {n: {} for n in ITERACIONES}
@@ -342,17 +343,22 @@ def main():
             resultados[n][pol] = tiempos[:n]
 
     # Tabla resumen (tambien sirve como lectura alternativa al color)
-    print(f"\n{'Politica':<22}" + "".join(f"{'n=' + str(n):>20}" for n in ITERACIONES))
-    print("-" * (22 + 20 * len(ITERACIONES)))
+    ancho = 30
+    print(f"\n{'Politica':<22}" + "".join(f"{'n=' + str(n):>{ancho}}" for n in ITERACIONES))
+    print("-" * (22 + ancho * len(ITERACIONES)))
     for pol in POLITICAS:
         fila = f"{pol:<22}"
         for n in ITERACIONES:
             ts = np.array(resultados[n][pol])
-            fila += f"{ts.mean():>12.1f} ±{ts.std():>6.1f}"
+            desvio = ts.std(ddof=1)             # desvio muestral: estima el de la poblacion
+            error_media = desvio / np.sqrt(n)   # error estandar de la media
+            fila += f"{ts.mean():>12.1f} ±{error_media:>5.1f}  sd {desvio:>5.1f}"
         print(fila)
-    print("\n(media ± desvio estandar, en segundos)")
+    print("\n(media ± error estandar de la media, y desvio estandar muestral; en segundos)")
 
-    carpeta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "capturas")
+    # graficos/ esta en la raiz del repo, al lado de los otros graficos
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    carpeta = os.path.join(raiz, "graficos")
     os.makedirs(carpeta, exist_ok=True)
     graficar(resultados, os.path.join(carpeta, "distribucion_tiempos.png"))
 
