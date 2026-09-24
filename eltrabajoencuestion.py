@@ -314,3 +314,4 @@ if __name__ == "__main__":
         print(f"Error del desviación Estándar (std): {error_desvio:.4f} s")
 
 
+# Marcos nunca hizo el readme
